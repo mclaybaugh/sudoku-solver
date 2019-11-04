@@ -42,7 +42,6 @@ function process(arr, vals) {
 }
 function getAdjacents(cell) {
   let values = [];
-  // get nums in row, col, block
   let row = cell.className.match(/row-[0-9]/)[0];
   let col = cell.className.match(/col-[0-9]/)[0];
   let block = cell.className.match(/block-[0-9]/)[0];
@@ -83,7 +82,6 @@ function update() {
         }
       }
     }
-    // set state as error, in-progress, success
   }
 }
 function createBlankCells() {
