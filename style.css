@@ -1,0 +1,18 @@
+.sudoku {
+  display: grid;
+  grid-template-rows: repeat(9, 1fr);
+  grid-template-columns: repeat(9, 1fr);
+  max-width: 200px;
+}
+.sudoku .input {
+  width: 10px;
+}
+.cell--error {
+  background-color: red;
+}
+.cell--in-progress {
+  background-color: gray;
+}
+.cell--success {
+  color: green;
+}
