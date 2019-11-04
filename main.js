@@ -31,37 +31,26 @@ function getBlock(row, col) {
 function getContent(cell) {
   return cell.querySelector('.cell-content').value;
 }
-function process(arr, vals) {
-  for (let cell of arr) {
-    let val = getContent(cell);
-    if (val) {
-      vals.push(val);
-    }
-  }
-  return vals;
-}
 function getAdjacents(cell) {
   let values = [];
   let row = cell.className.match(/row-[0-9]/)[0];
   let col = cell.className.match(/col-[0-9]/)[0];
   let block = cell.className.match(/block-[0-9]/)[0];
-  let rowCells = document.querySelectorAll(`.${row}:not(.${col})`);
-  let colCells = document.querySelectorAll(`.${col}:not(.${row})`);
-  let blockCells = document.querySelectorAll(`.${block}:not(.${row}):not(.${col})`);
-  values = process(colCells, values);
-  values = process(rowCells, values);
-  values = process(blockCells, values);
-
+  let rowSelector = `.${row}:not(.${col})`;
+  let colSelector = `.${col}:not(.${row})`;
+  let blockSelector = `.${block}:not(.${row}):not(.${col})`;
+  let adjacentCells = document.querySelectorAll(`${rowSelector}, ${colSelector}, ${blockSelector}`);
+  for (let acell of adjacentCells) {
+    values.push(getContent(acell));
+  }
   return values;
 }
 function update() {
   let cells = document.querySelectorAll('.cell');
   for (let cell of cells) {
-    console.log(cell.className);
     let value = getContent(cell);
     let adjacents = getAdjacents(cell);
     if (value) {
-      // remove notes
       for (let num = 1; num < 10; num++) {
         cell.classList.remove(`note-${num}`);
       }
@@ -82,6 +71,15 @@ function update() {
         }
       }
     }
+    // one choice rule
+    // hidden single (row, column, block)
+    // naked pair (row, column, block)
+    // pointing pair (triple)
+    // claiming pair (triple)
+    // naked triple
+    // x-wing
+    // hidden pair
+    // naked quad
   }
 }
 function createBlankCells() {
