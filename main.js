@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   createBlankCells();
+  let fillPuzzleBtn = document.getElementById('fillPuzzleBtn')
+  if (fillPuzzleBtn) {
+    fillPuzzleBtn.addEventListener('click', fillPuzzle);
+  }
 });
 function getBlock(row, col) {
   if (col < 4) {
@@ -55,35 +59,33 @@ function update() {
         cell.classList.remove(`note-${num}`);
       }
       if (adjacents.indexOf(value) < 0) {
-        cell.classList.add('cell-success');
         cell.classList.remove('cell-error');
       } else {
         cell.classList.add('cell-error');
-        cell.classList.remove('cell-success');
       }
     } else {
+      let numVals = 0;
       for (let num = 1; num < 10; num++) {
         let numClass = `note-${num}`;
         if (adjacents.indexOf(`${num}`) < 0) {
           cell.classList.add(numClass);
+          numVals++;
         } else {
           cell.classList.remove(numClass);
         }
       }
+      if (numVals == 1) {
+        cell.classList.add('nakedSingle');
+      }
     }
-    // one choice rule
+    // naked single, pair, triple
     // hidden single (row, column, block)
-    // naked pair (row, column, block)
     // pointing pair (triple)
-    // claiming pair (triple)
-    // naked triple
-    // x-wing
-    // hidden pair
-    // naked quad
   }
 }
 function createBlankCells() {
   let container = document.querySelector('.sudoku');
+  if (!container) return;
   for (let row = 1; row < 10; row++) {
     for (let col = 1; col < 10; col++) {
       container.appendChild(createCell(row, col));
@@ -107,11 +109,26 @@ function createCell(row, col) {
 
   let content = document.createElement('input');
   content.className = 'cell-content';
-  content.setAttribute('type', 'number');
-  content.setAttribute('min', '1');
-  content.setAttribute('max', '9');
+  content.setAttribute('type', 'text');
   content.addEventListener('change', update);
   cell.appendChild(content);
 
   return cell;
+}
+function fillPuzzle() {
+  let textArea = document.getElementById('puzzle');
+  if (!textArea) return;
+  let raw = textArea.value;
+  let lines = raw.split('\n');
+  let fields, row, col, x, cell;
+  for (let line of lines) {
+    fields = line.split(',');
+    row = fields[0];
+    col = fields[1];
+    x = fields[2];
+    cell = document.querySelector(`.row-${row}.col-${col} .cell-content`);
+    if (!cell) continue;
+    cell.value = x;
+  }
+  update();
 }

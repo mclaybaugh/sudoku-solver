@@ -1,14 +1,25 @@
+:root {
+  --bold-border: 2px solid black;
+  --light-border: 1px solid rgb(244, 244, 244);
+}
 .sudoku {
   display: grid;
   grid-template-rows: repeat(9, 1fr);
   grid-template-columns: repeat(9, 1fr);
   max-width: 200px;
+  margin: 2rem;
 }
 .cell {
   width: 60px;
   height: 60px;
   display: grid;
   position: relative;
+}
+.cell.nakedSingle {
+  background-color: #8fffbc;
+}
+.cell:focus-within {
+  background-color: lightcyan;
 }
 .cell-content {
   width: 100%;
@@ -19,6 +30,24 @@
   font-size: 2rem;
   padding: 0;
   color: inherit;
+  border-right: var(--light-border);
+  border-bottom: var(--light-border);
+}
+.cell.row-1 .cell-content,
+.cell.row-4 .cell-content,
+.cell.row-7 .cell-content {
+  border-top: var(--bold-border);
+}
+.cell.col-1 .cell-content,
+.cell.col-4 .cell-content,
+.cell.col-7 .cell-content {
+  border-left: var(--bold-border);
+}
+.cell.col-9 .cell-content {
+  border-right: var(--bold-border);
+}
+.cell.row-9 .cell-content {
+  border-bottom: var(--bold-border);
 }
 .cell-options {
   display: grid;
@@ -47,7 +76,4 @@
 /* state */
 .cell-error {
  color: red;
-}
-.cell-success {
-  color: green;
 }
