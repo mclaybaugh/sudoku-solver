@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   createBlankCells();
-  let fillPuzzleBtn = document.getElementById('fillPuzzleBtn')
+  let fillPuzzleBtn = document.getElementById('fillPuzzleBtn');
   if (fillPuzzleBtn) {
     fillPuzzleBtn.addEventListener('click', fillPuzzle);
+  }
+  let addOptionsBtn = document.getElementById('addOptionsBtn');
+  if (addOptionsBtn) {
+    addOptionsBtn.addEventListener('click', () => {update(true);});
   }
 });
 function getBlock(row, col) {
@@ -49,7 +53,7 @@ function getAdjacents(cell) {
   }
   return values;
 }
-function update() {
+function update(addOptions = false) {
   let cells = document.querySelectorAll('.cell');
   for (let cell of cells) {
     let value = getContent(cell);
@@ -68,20 +72,49 @@ function update() {
       for (let num = 1; num < 10; num++) {
         let numClass = `note-${num}`;
         if (adjacents.indexOf(`${num}`) < 0) {
-          cell.classList.add(numClass);
+          if (addOptions) cell.classList.add(numClass);
           numVals++;
         } else {
           cell.classList.remove(numClass);
         }
       }
+      cell.classList.remove('nakedSingle');
+      cell.classList.remove('nakedPair');
+      // naked single
       if (numVals == 1) {
         cell.classList.add('nakedSingle');
       }
     }
-    // naked single, pair, triple
-    // hidden single (row, column, block)
-    // pointing pair (triple)
   }
+  let groups = [];
+  for (let i = 1; i < 10; i++) {
+    groups.push(getOptionsArray(document.querySelectorAll(`.row-${i}`)));
+    groups.push(getOptionsArray(document.querySelectorAll(`.col-${i}`)));
+    groups.push(getOptionsArray(document.querySelectorAll(`.block-${i}`)));
+  }
+  for (let group of groups) {
+    for (let i = 0; i < group.length; i++) {
+      let x = document.querySelector(`.${group[i]['row']}.${group[i]['col']}`);
+      if (x.classList.contains('nakedPair')) continue;
+      if (group[i]['nums'].length == 2) {
+        for (let j = 0; j < group.length; j++) {
+          if (i == j) continue;
+          if (group[j]['nums'].length == 2) {
+            if (group[i]['nums'][0] == group[j]['nums'][0]
+            && group[i]['nums'][1] == group[j]['nums'][1]) {
+              let y = document.querySelector(`.${group[j]['row']}.${group[j]['col']}`);
+              if (x && y) {
+                x.classList.add('nakedPair');
+                y.classList.add('nakedPair');
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  // hidden single (row, column, block)
+  // pointing pair (triple)
 }
 function createBlankCells() {
   let container = document.querySelector('.sudoku');
@@ -131,4 +164,19 @@ function fillPuzzle() {
     cell.value = x;
   }
   update();
+}
+function getOptionsArray(els) {
+  let options = [];
+  let regex = /note-([0-9])/g;
+  for (let i = 0; i < 9; i++) {
+    let nums = [], match;
+    while ((match = regex.exec(els[i].className)) !== null) {
+      nums.push(parseInt(match[1]));
+    }
+    options[i] = [];
+    options[i]['row'] = els[i].className.match(/row-[0-9]/)[0];
+    options[i]['col'] = els[i].className.match(/col-[0-9]/)[0];
+    options[i]['nums'] = nums;
+  }
+  return options;
 }

@@ -18,6 +18,9 @@
 .cell.nakedSingle {
   background-color: #8fffbc;
 }
+.cell.nakedPair {
+  background-color: #ed9fbe;
+}
 .cell:focus-within {
   background-color: lightcyan;
 }
